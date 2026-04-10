@@ -1,0 +1,41 @@
+[app]
+name = "crypto-trader-bot"
+log_level = "info"
+
+[chain]
+network = "base-sepolia"
+rpc_url = ""                   # set via env: CHAIN_RPC_URL
+ws_url  = ""                   # set via env: CHAIN_WS_URL
+poll_interval_ms = 500
+
+[binance]
+rest_url     = "https://api.binance.com"
+ws_url       = "wss://stream.binance.com:9443/ws"
+recv_window  = 5000
+
+[liquidation]
+enabled           = true
+min_profit_usd_cents = 1000    # $10 minimum profit
+max_position_usd_cents = 100000_00  # $100,000 max
+health_factor_threshold = "1.05"    # start watching below this
+protocols = ["aave-v3"]
+
+[token_unlock]
+enabled           = true
+min_unlock_usd    = 1_000_000   # $1M minimum unlock to trade
+days_before_entry = 30
+days_before_exit  = 2
+
+[database]
+url            = ""            # set via env: DATABASE_URL
+max_connections = 10
+min_connections = 2
+
+[observability]
+openobserve_url    = ""        # set via env: OPENOBSERVE_URL
+openobserve_token  = ""        # set via env: OPENOBSERVE_TOKEN
+service_name       = "crypto-trader-bot"
+
+[web]
+host = "0.0.0.0"
+port = 3000

@@ -1,0 +1,17 @@
+[package]
+name    = "tui-ui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+trader-core = { path = "../../core" }
+monitor     = { path = "../../monitor" }
+ratatui     = { workspace = true }
+crossterm   = { workspace = true, features = ["event-stream"] }
+tokio       = { workspace = true }
+thiserror   = { workspace = true }
+serde       = { workspace = true }
+tracing     = { workspace = true }
+anyhow      = { workspace = true }
+chrono      = { workspace = true }
+futures     = { workspace = true }

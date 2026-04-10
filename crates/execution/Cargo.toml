@@ -1,0 +1,19 @@
+[package]
+name    = "execution"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+trader-core = { path = "../core" }
+tokio       = { workspace = true }
+reqwest     = { workspace = true }
+thiserror   = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+tracing     = { workspace = true }
+hmac        = "0.12"
+sha2        = "0.10"
+hex         = "0.4"
+chrono      = { workspace = true }
+rust_decimal = { workspace = true }
+async-trait = { workspace = true }

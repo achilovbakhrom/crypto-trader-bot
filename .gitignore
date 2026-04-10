@@ -1,0 +1,34 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Environment / secrets
+.env
+config/*.local.toml
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend build artifacts
+crates/ui/web/frontend/node_modules/
+crates/ui/web/frontend/dist/
+crates/ui/web/frontend/.next/
+
+# Logs
+*.log
+logs/
+
+# Local settings
+.claude/settings.local.json

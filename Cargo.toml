@@ -1,0 +1,116 @@
+[workspace]
+members = [
+    "crates/core",
+    "crates/storage",
+    "crates/monitor",
+    "crates/feeds",
+    "crates/chain",
+    "crates/execution",
+    "crates/strategies/liquidation",
+    "crates/strategies/token_unlock",
+    "crates/ui/tui",
+    "crates/ui/web",
+    ".",
+]
+resolver = "2"
+
+[package]
+name    = "crypto-trader-bot"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "bot"
+path = "src/main.rs"
+
+[dependencies]
+trader-core      = { path = "crates/core" }
+storage         = { path = "crates/storage" }
+monitor         = { path = "crates/monitor" }
+feeds           = { path = "crates/feeds" }
+chain           = { path = "crates/chain" }
+execution       = { path = "crates/execution" }
+liquidation     = { path = "crates/strategies/liquidation" }
+token-unlock    = { path = "crates/strategies/token_unlock" }
+tui-ui          = { path = "crates/ui/tui" }
+web-ui          = { path = "crates/ui/web" }
+tokio           = { workspace = true }
+tracing         = { workspace = true }
+anyhow          = { workspace = true }
+serde           = { workspace = true }
+
+[workspace.dependencies]
+# async
+tokio       = { version = "1", features = ["full"] }
+tokio-stream = { version = "0.1" }
+
+# web / networking
+axum                = { version = "0.8", features = ["ws"] }
+reqwest             = { version = "0.12", features = ["json"] }
+tokio-tungstenite   = { version = "0.26", features = ["native-tls"] }
+tower               = { version = "0.5" }
+tower-http          = { version = "0.6", features = ["cors", "fs"] }
+
+# blockchain
+alloy               = { version = "1", features = [
+    "full",
+    "providers",
+    "contract",
+    "network",
+    "rpc",
+    "transports",
+    "transport-ws",
+    "transport-http",
+    "pubsub",
+    "sol-types",
+] }
+
+# database
+sqlx = { version = "0.8", features = [
+    "runtime-tokio",
+    "tls-native-tls",
+    "postgres",
+    "chrono",
+    "uuid",
+    "bigdecimal",
+] }
+
+# serialization
+serde       = { version = "1", features = ["derive"] }
+serde_json  = { version = "1" }
+toml        = { version = "0.8" }
+
+# error handling
+thiserror   = { version = "2" }
+anyhow      = { version = "1" }
+
+# logging / tracing
+tracing             = { version = "0.1" }
+tracing-subscriber  = { version = "0.3", features = ["env-filter", "json"] }
+opentelemetry       = { version = "0.27" }
+opentelemetry-otlp  = { version = "0.27", features = ["http-proto", "reqwest-client"] }
+opentelemetry_sdk   = { version = "0.27", features = ["rt-tokio"] }
+tracing-opentelemetry = { version = "0.28" }
+
+# TUI
+ratatui     = { version = "0.29" }
+crossterm   = { version = "0.28" }
+
+# config
+config      = { version = "0.14" }
+dotenvy     = { version = "0.15" }
+
+# utils
+chrono      = { version = "0.4", features = ["serde"] }
+uuid        = { version = "1", features = ["v4", "serde"] }
+bigdecimal  = { version = "0.4", features = ["serde"] }
+rust_decimal = { version = "1", features = ["serde-with-str"] }
+futures     = { version = "0.3" }
+async-trait = { version = "0.1" }
+bytes       = { version = "1" }
+url         = { version = "2" }
+
+[profile.release]
+opt-level   = 3
+lto         = true
+codegen-units = 1
