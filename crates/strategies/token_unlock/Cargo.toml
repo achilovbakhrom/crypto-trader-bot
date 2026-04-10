@@ -1,0 +1,22 @@
+[package]
+name    = "token-unlock"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+trader-core = { path = "../../core" }
+chain       = { path = "../../chain" }
+execution   = { path = "../../execution" }
+storage     = { path = "../../storage" }
+feeds       = { path = "../../feeds" }
+monitor     = { path = "../../monitor" }
+tokio       = { workspace = true }
+thiserror   = { workspace = true }
+anyhow      = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+tracing     = { workspace = true }
+rust_decimal = { workspace = true }
+chrono      = { workspace = true }
+async-trait = { workspace = true }
+alloy       = { workspace = true }
