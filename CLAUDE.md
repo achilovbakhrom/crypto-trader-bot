@@ -1,10 +1,19 @@
-# Crypto Trader Bot — Claude Development Guide
+t# Crypto Trader Bot — Claude Development Guide
 
 ## Project Overview
 
 A Rust-based crypto trading bot implementing two strategies:
 - **Liquidation Bot** — monitors DeFi lending protocols (Aave V3, Compound V3, Morpho) on Base L2, executes liquidations, sells collateral on Binance
 - **Token Unlock Trading** — monitors vesting contracts, executes CEX short positions ahead of large unlocks
+
+## Agent Workflow
+
+When working on any non-trivial task:
+1. Invoke `/pm` skill to break the task into subtasks
+2. Run independent subtasks as parallel agents in a single message
+3. Run dependent subtasks sequentially after their dependencies complete
+4. Invoke `/reviewer` before creating any PR
+5. Invoke `/rust-dev`, `/frontend-dev`, or `/db-reviewer` when reviewing domain-specific code
 
 ## Tech Stack
 
@@ -50,6 +59,13 @@ crypto-trader-bot/
 
 ## Git Workflow
 
+### Branch Model
+```
+main        <- production only, protected, never push directly
+dev         <- default integration branch, base for all features
+feature/*   <- branch off dev, PR back to dev
+```
+
 ### Branch Naming
 ```
 feature/<short-description>   <- new functionality
@@ -70,9 +86,21 @@ refactor(feeds): split binance ws into separate modules
 
 ### Rules
 - One feature = one commit
-- Every feature goes through a PR — no direct push to `main`
-- PR must be reviewed before merge
-- `main` branch is always deployable
+- No co-author lines in commit messages
+- Every feature goes through a PR to `dev` — no direct push to `dev` or `main`
+- Run `/reviewer` skill before creating any PR
+- PR must be approved before merge
+- `main` is only updated from `dev` when releasing to production
+
+### Pre-push Hook (automated)
+All checks must pass before any push is accepted:
+- `cargo fmt --check`
+- `cargo clippy -- -D warnings`
+- `cargo test`
+- `prettier --check` (frontend, if directory exists)
+- `eslint --max-warnings 0` (frontend, if directory exists)
+
+A failed check blocks the push. Fix the issue, do not skip the hook.
 
 ## Code Standards
 
