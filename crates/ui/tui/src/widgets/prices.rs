@@ -1,8 +1,8 @@
-use ratatui::Frame;
 use ratatui::layout::{Constraint, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::Span;
 use ratatui::widgets::{Block, BorderType, Borders, Cell, Row, Table};
+use ratatui::Frame;
 
 use crate::app::AppState;
 
@@ -28,14 +28,8 @@ pub fn render_prices(f: &mut Frame, area: Rect, state: &AppState) {
 
             Row::new(vec![
                 Cell::from(Span::styled(symbol, Style::default().fg(Color::White))),
-                Cell::from(Span::styled(
-                    bid,
-                    Style::default().fg(Color::Green),
-                )),
-                Cell::from(Span::styled(
-                    ask,
-                    Style::default().fg(Color::Red),
-                )),
+                Cell::from(Span::styled(bid, Style::default().fg(Color::Green))),
+                Cell::from(Span::styled(ask, Style::default().fg(Color::Red))),
             ])
         })
         .collect();

@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use chrono::Utc;
-use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
+use rust_decimal::Decimal;
 use serde_json::json;
 use tokio::sync::mpsc;
 use tracing::{error, info, warn};
 
-use trader_core::types::{BorrowerPosition, LiquidationOpportunity};
 use storage::models::NewLiquidation;
+use trader_core::types::{BorrowerPosition, LiquidationOpportunity};
 
 use crate::detector::LiquidationDetector;
 use crate::executor::LiquidationExecutor;
@@ -111,11 +111,9 @@ impl LiquidationStrategy {
             // Reconstruct a minimal BorrowerPosition so the detector can apply
             // its size and profit checks.
             let position = opportunity_to_position(&opportunity);
-            let evaluated = self.detector.evaluate(
-                &position,
-                price_cents,
-                symbol.0.as_str(),
-            );
+            let evaluated = self
+                .detector
+                .evaluate(&position, price_cents, symbol.0.as_str());
 
             let evaluated_opportunity = match evaluated {
                 Some(opp) => opp,
@@ -141,7 +139,10 @@ impl LiquidationStrategy {
                 collateral_asset: evaluated_opportunity.collateral_asset.clone(),
                 debt_asset: evaluated_opportunity.debt_asset.clone(),
                 debt_amount_wei: Decimal::from(
-                    evaluated_opportunity.debt_amount_wei.0.min(i64::MAX as u128) as i64,
+                    evaluated_opportunity
+                        .debt_amount_wei
+                        .0
+                        .min(i64::MAX as u128) as i64,
                 ),
                 collateral_received_wei: Decimal::ZERO,
                 profit_cents: evaluated_opportunity.estimated_profit_cents,
@@ -171,12 +172,9 @@ impl LiquidationStrategy {
                 "estimated_profit_cents": evaluated_opportunity.estimated_profit_cents,
                 "debt_amount_wei":        evaluated_opportunity.debt_amount_wei.0.to_string(),
             });
-            if let Err(e) = storage::queries::log_event(
-                self.db.pool(),
-                "liquidation.attempt",
-                attempt_payload,
-            )
-            .await
+            if let Err(e) =
+                storage::queries::log_event(self.db.pool(), "liquidation.attempt", attempt_payload)
+                    .await
             {
                 error!(error = %e, "failed to log liquidation.attempt event");
             }
@@ -184,7 +182,11 @@ impl LiquidationStrategy {
             // ------------------------------------------------------------------
             // Step 4: Execute the liquidation.
             // ------------------------------------------------------------------
-            match self.executor.execute(&evaluated_opportunity, &*provider).await {
+            match self
+                .executor
+                .execute(&evaluated_opportunity, &*provider)
+                .await
+            {
                 Ok(result) => {
                     // --------------------------------------------------------
                     // Step 5 (success): log result to DB, update metrics.

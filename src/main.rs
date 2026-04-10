@@ -6,8 +6,7 @@ use tracing::{error, info};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // ── Config ────────────────────────────────────────────────────────────────
-    let cfg = trader_core::config::AppConfig::load()
-        .context("Failed to load configuration")?;
+    let cfg = trader_core::config::AppConfig::load().context("Failed to load configuration")?;
 
     // ── Telemetry ─────────────────────────────────────────────────────────────
     let _telemetry_guard = monitor::telemetry::init_telemetry(
@@ -74,18 +73,14 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let aave_monitor = Arc::new(
-        chain::aave::AaveMonitor::new(
-            &cfg.chain.rpc_url,
-            pool_address,
-            cfg.chain.poll_interval_ms,
-        )
-        .await
-        .context("Failed to initialize Aave monitor")?,
+        chain::aave::AaveMonitor::new(&cfg.chain.rpc_url, pool_address, cfg.chain.poll_interval_ms)
+            .await
+            .context("Failed to initialize Aave monitor")?,
     );
 
     // ── Liquidation Strategy ──────────────────────────────────────────────────
-    let private_key = std::env::var("PRIVATE_KEY")
-        .context("PRIVATE_KEY environment variable not set")?;
+    let private_key =
+        std::env::var("PRIVATE_KEY").context("PRIVATE_KEY environment variable not set")?;
 
     let (opportunity_tx, opportunity_rx) = mpsc::channel(100);
 
@@ -112,11 +107,7 @@ async fn main() -> anyhow::Result<()> {
 
     // ── Web Server State ──────────────────────────────────────────────────────
     let web_state = web_ui::state::AppState::new(db.clone(), metrics.clone());
-    let web_server = web_ui::server::WebServer::new(
-        web_state,
-        cfg.web.host.clone(),
-        cfg.web.port,
-    );
+    let web_server = web_ui::server::WebServer::new(web_state, cfg.web.host.clone(), cfg.web.port);
 
     // ── TUI ───────────────────────────────────────────────────────────────────
     let (tui_app, tui_event_rx) = tui_ui::app::App::new();

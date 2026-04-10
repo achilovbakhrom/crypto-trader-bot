@@ -1,8 +1,8 @@
-use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Borders, List, ListItem};
+use ratatui::Frame;
 
 use crate::app::{AppState, LogLevel};
 
@@ -29,20 +29,14 @@ pub fn render_event_log(f: &mut Frame, area: Rect, state: &AppState) {
             let ts = entry.timestamp.format("%H:%M:%S").to_string();
 
             let line = Line::from(vec![
-                Span::styled(
-                    format!("[{}] ", ts),
-                    Style::default().fg(Color::DarkGray),
-                ),
+                Span::styled(format!("[{}] ", ts), Style::default().fg(Color::DarkGray)),
                 Span::styled(
                     format!("{} ", level_tag),
                     Style::default()
                         .fg(level_color)
                         .add_modifier(Modifier::BOLD),
                 ),
-                Span::styled(
-                    entry.message.clone(),
-                    Style::default().fg(level_color),
-                ),
+                Span::styled(entry.message.clone(), Style::default().fg(level_color)),
             ]);
 
             ListItem::new(line)

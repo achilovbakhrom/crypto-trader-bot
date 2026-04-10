@@ -49,10 +49,7 @@ pub struct UnlockScanner {
 
 impl UnlockScanner {
     /// Create a new scanner with the given contracts and provider.
-    pub fn new(
-        contracts: Vec<VestingContract>,
-        provider: Arc<dyn Provider + Send + Sync>,
-    ) -> Self {
+    pub fn new(contracts: Vec<VestingContract>, provider: Arc<dyn Provider + Send + Sync>) -> Self {
         Self {
             contracts,
             provider,
@@ -100,19 +97,19 @@ impl UnlockScanner {
         &self,
         contract: &VestingContract,
     ) -> Result<Vec<TokenUnlockEvent>, TokenUnlockError> {
-        let contract_address: Address = contract
-            .address
-            .parse()
-            .map_err(|e| TokenUnlockError::ScanError(format!("invalid contract address '{}': {}", contract.address, e)))?;
+        let contract_address: Address = contract.address.parse().map_err(|e| {
+            TokenUnlockError::ScanError(format!(
+                "invalid contract address '{}': {}",
+                contract.address, e
+            ))
+        })?;
 
         // ------------------------------------------------------------------
         // Fetch the latest block number so we can bound the filter range.
         // ------------------------------------------------------------------
-        let latest_block = self
-            .provider
-            .get_block_number()
-            .await
-            .map_err(|e| TokenUnlockError::ScanError(format!("failed to get block number: {}", e)))?;
+        let latest_block = self.provider.get_block_number().await.map_err(|e| {
+            TokenUnlockError::ScanError(format!("failed to get block number: {}", e))
+        })?;
 
         debug!(
             contract = %contract.address,
@@ -135,7 +132,9 @@ impl UnlockScanner {
             .provider
             .get_logs(&released_filter)
             .await
-            .map_err(|e| TokenUnlockError::ScanError(format!("failed to fetch TokensReleased logs: {}", e)))?;
+            .map_err(|e| {
+                TokenUnlockError::ScanError(format!("failed to fetch TokensReleased logs: {}", e))
+            })?;
 
         debug!(
             contract = %contract.address,
@@ -144,14 +143,12 @@ impl UnlockScanner {
         );
 
         for log in released_logs {
-            let decoded = TokensReleased::decode_log(log.as_ref())
-                .map_err(|e| TokenUnlockError::ScanError(format!("failed to decode TokensReleased log: {}", e)))?;
+            let decoded = TokensReleased::decode_log(log.as_ref()).map_err(|e| {
+                TokenUnlockError::ScanError(format!("failed to decode TokensReleased log: {}", e))
+            })?;
 
             // Use block timestamp from the log; fall back to 0 when unavailable.
-            let unlock_timestamp = log
-                .block_timestamp
-                .map(|ts| ts as i64)
-                .unwrap_or(0i64);
+            let unlock_timestamp = log.block_timestamp.map(|ts| ts as i64).unwrap_or(0i64);
 
             let amount_u128: u128 = decoded.amount.try_into().unwrap_or(u128::MAX);
 
@@ -179,7 +176,12 @@ impl UnlockScanner {
             .provider
             .get_logs(&schedule_filter)
             .await
-            .map_err(|e| TokenUnlockError::ScanError(format!("failed to fetch VestingScheduleCreated logs: {}", e)))?;
+            .map_err(|e| {
+                TokenUnlockError::ScanError(format!(
+                    "failed to fetch VestingScheduleCreated logs: {}",
+                    e
+                ))
+            })?;
 
         debug!(
             contract = %contract.address,
@@ -188,8 +190,12 @@ impl UnlockScanner {
         );
 
         for log in schedule_logs {
-            let decoded = VestingScheduleCreated::decode_log(log.as_ref())
-                .map_err(|e| TokenUnlockError::ScanError(format!("failed to decode VestingScheduleCreated log: {}", e)))?;
+            let decoded = VestingScheduleCreated::decode_log(log.as_ref()).map_err(|e| {
+                TokenUnlockError::ScanError(format!(
+                    "failed to decode VestingScheduleCreated log: {}",
+                    e
+                ))
+            })?;
 
             // The unlock happens at start + cliff + duration.
             let start_u64: u64 = decoded.start.try_into().unwrap_or(0u64);

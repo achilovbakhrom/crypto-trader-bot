@@ -4,9 +4,9 @@ use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use tracing::{debug, info};
 
-use trader_core::types::{BeneficiaryType, TokenUnlockEvent};
 use execution::binance::BinanceClient;
 use execution::order::OrderResult;
+use trader_core::types::{BeneficiaryType, TokenUnlockEvent};
 
 use crate::error::TokenUnlockError;
 
@@ -136,7 +136,9 @@ impl UnlockTrader {
         self.binance
             .market_sell(symbol, quantity)
             .await
-            .map_err(|e| TokenUnlockError::TradeError(format!("market sell failed for {symbol}: {e}")))
+            .map_err(|e| {
+                TokenUnlockError::TradeError(format!("market sell failed for {symbol}: {e}"))
+            })
     }
 
     /// Close a short position by placing a market buy.
@@ -150,7 +152,9 @@ impl UnlockTrader {
         self.binance
             .market_buy(symbol, quantity)
             .await
-            .map_err(|e| TokenUnlockError::TradeError(format!("market buy failed for {symbol}: {e}")))
+            .map_err(|e| {
+                TokenUnlockError::TradeError(format!("market buy failed for {symbol}: {e}"))
+            })
     }
 
     // -----------------------------------------------------------------------

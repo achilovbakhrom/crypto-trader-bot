@@ -48,18 +48,12 @@ impl Metrics {
     /// consistent view should quiesce all writers first.
     pub fn snapshot(&self) -> MetricsSnapshot {
         MetricsSnapshot {
-            liquidations_attempted: self
-                .liquidations_attempted
-                .load(Ordering::Relaxed),
-            liquidations_succeeded: self
-                .liquidations_succeeded
-                .load(Ordering::Relaxed),
+            liquidations_attempted: self.liquidations_attempted.load(Ordering::Relaxed),
+            liquidations_succeeded: self.liquidations_succeeded.load(Ordering::Relaxed),
             liquidations_failed: self.liquidations_failed.load(Ordering::Relaxed),
             total_profit_cents: self.total_profit_cents.load(Ordering::Relaxed),
             positions_monitored: self.positions_monitored.load(Ordering::Relaxed),
-            price_updates_received: self
-                .price_updates_received
-                .load(Ordering::Relaxed),
+            price_updates_received: self.price_updates_received.load(Ordering::Relaxed),
             unlocks_tracked: self.unlocks_tracked.load(Ordering::Relaxed),
         }
     }

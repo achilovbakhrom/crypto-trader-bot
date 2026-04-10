@@ -83,11 +83,7 @@ impl AppConfig {
 
         let mut cfg = Config::builder()
             .add_source(File::with_name("config/default"))
-            .add_source(
-                Environment::default()
-                    .separator("_")
-                    .ignore_empty(true),
-            )
+            .add_source(Environment::default().separator("_").ignore_empty(true))
             .build()?;
 
         let mut app: AppConfig = cfg.try_deserialize()?;
@@ -99,10 +95,14 @@ impl AppConfig {
             .map_err(|_| CoreError::EnvVar("BINANCE_API_SECRET".into()))?;
         app.chain.rpc_url = std::env::var("CHAIN_RPC_URL")
             .map_err(|_| CoreError::EnvVar("CHAIN_RPC_URL".into()))?;
-        app.chain.ws_url = std::env::var("CHAIN_WS_URL")
-            .unwrap_or_else(|_| app.chain.rpc_url.replace("https://", "wss://").replace("http://", "ws://"));
-        app.database.url = std::env::var("DATABASE_URL")
-            .map_err(|_| CoreError::EnvVar("DATABASE_URL".into()))?;
+        app.chain.ws_url = std::env::var("CHAIN_WS_URL").unwrap_or_else(|_| {
+            app.chain
+                .rpc_url
+                .replace("https://", "wss://")
+                .replace("http://", "ws://")
+        });
+        app.database.url =
+            std::env::var("DATABASE_URL").map_err(|_| CoreError::EnvVar("DATABASE_URL".into()))?;
 
         Ok(app)
     }

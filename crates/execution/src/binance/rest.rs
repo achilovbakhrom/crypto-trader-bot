@@ -67,12 +67,7 @@ pub struct BinanceClient {
 }
 
 impl BinanceClient {
-    pub fn new(
-        base_url: String,
-        api_key: String,
-        api_secret: String,
-        recv_window: u64,
-    ) -> Self {
+    pub fn new(base_url: String, api_key: String, api_secret: String, recv_window: u64) -> Self {
         let http = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(10))
             .build()
@@ -289,9 +284,8 @@ impl BinanceClient {
         }
 
         if !status.is_success() {
-            let api_err: BinanceApiError = serde_json::from_str(&body).map_err(|_| {
-                ExecutionError::HttpError(format!("HTTP {status}: {body}"))
-            })?;
+            let api_err: BinanceApiError = serde_json::from_str(&body)
+                .map_err(|_| ExecutionError::HttpError(format!("HTTP {status}: {body}")))?;
 
             // -2010 = insufficient balance on Binance
             if api_err.code == -2010 {

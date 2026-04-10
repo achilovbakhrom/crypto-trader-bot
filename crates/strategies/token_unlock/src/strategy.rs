@@ -5,12 +5,12 @@ use chrono::Utc;
 use rust_decimal::Decimal;
 use tracing::{debug, error, info, warn};
 
-use trader_core::types::Symbol;
 use feeds::price_store::PriceStore;
 use monitor::metrics::Metrics;
 use storage::db::Database;
 use storage::models::NewTokenUnlock;
 use storage::queries;
+use trader_core::types::Symbol;
 
 use crate::error::TokenUnlockError;
 use crate::scanner::UnlockScanner;
@@ -205,10 +205,9 @@ impl TokenUnlockStrategy {
                             .unwrap_or(now);
 
                         // Wei is u128; Decimal has no From<u128>, so we go through string.
-                        let amount_decimal = Decimal::from_str_exact(
-                            &event.unlock_amount_wei.0.to_string(),
-                        )
-                        .unwrap_or(Decimal::ZERO);
+                        let amount_decimal =
+                            Decimal::from_str_exact(&event.unlock_amount_wei.0.to_string())
+                                .unwrap_or(Decimal::ZERO);
 
                         let new_unlock = NewTokenUnlock {
                             token_address: event.token_address.clone(),
@@ -261,7 +260,10 @@ impl TokenUnlockStrategy {
             // ------------------------------------------------------------------
             // 6. Sleep until next scan cycle.
             // ------------------------------------------------------------------
-            debug!(interval_secs = self.scan_interval_secs, "sleeping until next scan");
+            debug!(
+                interval_secs = self.scan_interval_secs,
+                "sleeping until next scan"
+            );
             tokio::time::sleep(interval).await;
         }
     }
@@ -309,12 +311,9 @@ impl TokenUnlockStrategy {
                         "order_id": order_result.order_id,
                     });
 
-                    if let Err(e) = queries::log_event(
-                        self.db.pool(),
-                        "token_unlock.short_closed",
-                        payload,
-                    )
-                    .await
+                    if let Err(e) =
+                        queries::log_event(self.db.pool(), "token_unlock.short_closed", payload)
+                            .await
                     {
                         warn!(error = %e, "failed to log short-closed event");
                     }

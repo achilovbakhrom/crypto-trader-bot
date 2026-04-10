@@ -4,13 +4,13 @@ use alloy::network::EthereumWallet;
 use alloy::primitives::{Address, U256};
 use alloy::providers::{Provider, ProviderBuilder};
 use alloy::signers::local::PrivateKeySigner;
-use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
+use rust_decimal::Decimal;
 use tracing::info;
 
-use trader_core::types::LiquidationOpportunity;
 use execution::binance::BinanceClient;
 use execution::order::OrderResult;
+use trader_core::types::LiquidationOpportunity;
 
 use crate::error::LiquidationError;
 
@@ -31,11 +31,7 @@ pub struct LiquidationExecutor {
 
 impl LiquidationExecutor {
     /// Construct a new executor.
-    pub fn new(
-        binance: Arc<BinanceClient>,
-        private_key: String,
-        pool_address: String,
-    ) -> Self {
+    pub fn new(binance: Arc<BinanceClient>, private_key: String, pool_address: String) -> Self {
         Self {
             binance,
             private_key,
@@ -62,26 +58,17 @@ impl LiquidationExecutor {
             .parse()
             .map_err(|e| LiquidationError::ExecutionError(format!("invalid pool address: {e}")))?;
 
-        let collateral_asset: Address = opportunity
-            .collateral_asset
-            .parse()
-            .map_err(|e| {
-                LiquidationError::ExecutionError(format!("invalid collateral asset address: {e}"))
-            })?;
+        let collateral_asset: Address = opportunity.collateral_asset.parse().map_err(|e| {
+            LiquidationError::ExecutionError(format!("invalid collateral asset address: {e}"))
+        })?;
 
-        let debt_asset: Address = opportunity
-            .debt_asset
-            .parse()
-            .map_err(|e| {
-                LiquidationError::ExecutionError(format!("invalid debt asset address: {e}"))
-            })?;
+        let debt_asset: Address = opportunity.debt_asset.parse().map_err(|e| {
+            LiquidationError::ExecutionError(format!("invalid debt asset address: {e}"))
+        })?;
 
-        let borrower: Address = opportunity
-            .borrower
-            .parse()
-            .map_err(|e| {
-                LiquidationError::ExecutionError(format!("invalid borrower address: {e}"))
-            })?;
+        let borrower: Address = opportunity.borrower.parse().map_err(|e| {
+            LiquidationError::ExecutionError(format!("invalid borrower address: {e}"))
+        })?;
 
         // Parse the private key into a signer.
         let key_str = self.private_key.trim_start_matches("0x");
@@ -122,10 +109,9 @@ impl LiquidationExecutor {
             false, // receive underlying token, not aToken
         );
 
-        let pending_tx = call
-            .send()
-            .await
-            .map_err(|e| LiquidationError::ExecutionError(format!("liquidationCall send failed: {e}")))?;
+        let pending_tx = call.send().await.map_err(|e| {
+            LiquidationError::ExecutionError(format!("liquidationCall send failed: {e}"))
+        })?;
 
         let tx_hash = format!("{}", pending_tx.tx_hash());
         info!(tx_hash = %tx_hash, "liquidationCall broadcast");
@@ -133,12 +119,9 @@ impl LiquidationExecutor {
         // ------------------------------------------------------------------
         // Step 3: Wait for the receipt.
         // ------------------------------------------------------------------
-        let receipt = pending_tx
-            .get_receipt()
-            .await
-            .map_err(|e| {
-                LiquidationError::ExecutionError(format!("waiting for receipt failed: {e}"))
-            })?;
+        let receipt = pending_tx.get_receipt().await.map_err(|e| {
+            LiquidationError::ExecutionError(format!("waiting for receipt failed: {e}"))
+        })?;
 
         if !receipt.status() {
             return Err(LiquidationError::ExecutionError(format!(
@@ -187,8 +170,7 @@ impl LiquidationExecutor {
 
         info!(
             order_id = sell_order.order_id,
-            actual_profit_cents,
-            "collateral sold"
+            actual_profit_cents, "collateral sold"
         );
 
         Ok(ExecutionResult {
@@ -241,9 +223,7 @@ fn compute_profit_cents(order: &OrderResult, opp: &LiquidationOpportunity) -> i6
     let usdt_received = order.cummulative_quote_qty;
 
     // Convert to cents (multiply by 100).
-    let revenue_cents = (usdt_received * Decimal::new(100, 0))
-        .to_i64()
-        .unwrap_or(0);
+    let revenue_cents = (usdt_received * Decimal::new(100, 0)).to_i64().unwrap_or(0);
 
     // Subtract commission costs from fills.
     let commission_cents: i64 = order

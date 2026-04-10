@@ -8,7 +8,9 @@ pub enum LiquidationError {
     #[error("execution error: {0}")]
     ExecutionError(String),
 
-    #[error("insufficient profit: estimated {estimated_cents} cents, minimum {minimum_cents} cents")]
+    #[error(
+        "insufficient profit: estimated {estimated_cents} cents, minimum {minimum_cents} cents"
+    )]
     InsufficientProfit {
         estimated_cents: i64,
         minimum_cents: i64,

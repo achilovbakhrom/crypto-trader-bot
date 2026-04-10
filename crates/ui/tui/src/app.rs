@@ -4,15 +4,15 @@ use std::time::Duration;
 use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyModifiers};
 use crossterm::execute;
 use crossterm::terminal::{
-    EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
+    disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
 };
 use futures::StreamExt;
-use ratatui::Terminal;
 use ratatui::backend::CrosstermBackend;
-use tokio::sync::{RwLock, mpsc};
+use ratatui::Terminal;
+use tokio::sync::{mpsc, RwLock};
 
-use trader_core::types::{BorrowerPosition, Quote};
 use monitor::metrics::MetricsSnapshot;
+use trader_core::types::{BorrowerPosition, Quote};
 
 use crate::error::TuiError;
 use crate::widgets::layout::build_layout;

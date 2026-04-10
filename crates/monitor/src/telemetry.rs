@@ -43,7 +43,9 @@ pub fn init_telemetry(
             .try_init()
             .map_err(|e| MonitorError::InitError(e.to_string()))?;
 
-        return Ok(TelemetryGuard { _provider: provider });
+        return Ok(TelemetryGuard {
+            _provider: provider,
+        });
     }
 
     // Build the OTLP/HTTP span exporter pointing at OpenObserve
@@ -87,5 +89,7 @@ pub fn init_telemetry(
         .try_init()
         .map_err(|e| MonitorError::InitError(e.to_string()))?;
 
-    Ok(TelemetryGuard { _provider: provider })
+    Ok(TelemetryGuard {
+        _provider: provider,
+    })
 }

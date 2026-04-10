@@ -1,8 +1,8 @@
-use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
+use ratatui::Frame;
 
 use crate::app::AppState;
 
@@ -30,16 +30,15 @@ pub fn render_system(f: &mut Frame, area: Rect, state: &AppState) {
             Span::styled(
                 format!(
                     "{}/{}/{}",
-                    m.liquidations_attempted,
-                    m.liquidations_succeeded,
-                    m.liquidations_failed
+                    m.liquidations_attempted, m.liquidations_succeeded, m.liquidations_failed
                 ),
                 value_style,
             ),
         ]),
-        Line::from(vec![
-            Span::styled("  attempted/ok/fail", Style::default().fg(Color::DarkGray)),
-        ]),
+        Line::from(vec![Span::styled(
+            "  attempted/ok/fail",
+            Style::default().fg(Color::DarkGray),
+        )]),
         Line::from(vec![
             Span::styled("profit:        ", label_style),
             Span::styled(

@@ -39,7 +39,11 @@ impl BinanceFeed {
             .collect::<Vec<_>>()
             .join("/");
 
-        format!("{}/stream?streams={}", self.ws_url.trim_end_matches('/'), streams)
+        format!(
+            "{}/stream?streams={}",
+            self.ws_url.trim_end_matches('/'),
+            streams
+        )
     }
 
     /// Connect and start streaming. Reconnects automatically on disconnect.
@@ -148,21 +152,37 @@ impl BinanceFeed {
                 .ok()?
         };
 
-        let bid_price = ticker.bid_price.parse::<Decimal>().map_err(|e| {
-            warn!(error = %e, raw = %ticker.bid_price, "Failed to parse bid_price");
-        }).ok()?;
+        let bid_price = ticker
+            .bid_price
+            .parse::<Decimal>()
+            .map_err(|e| {
+                warn!(error = %e, raw = %ticker.bid_price, "Failed to parse bid_price");
+            })
+            .ok()?;
 
-        let bid_qty = ticker.bid_qty.parse::<Decimal>().map_err(|e| {
-            warn!(error = %e, raw = %ticker.bid_qty, "Failed to parse bid_qty");
-        }).ok()?;
+        let bid_qty = ticker
+            .bid_qty
+            .parse::<Decimal>()
+            .map_err(|e| {
+                warn!(error = %e, raw = %ticker.bid_qty, "Failed to parse bid_qty");
+            })
+            .ok()?;
 
-        let ask_price = ticker.ask_price.parse::<Decimal>().map_err(|e| {
-            warn!(error = %e, raw = %ticker.ask_price, "Failed to parse ask_price");
-        }).ok()?;
+        let ask_price = ticker
+            .ask_price
+            .parse::<Decimal>()
+            .map_err(|e| {
+                warn!(error = %e, raw = %ticker.ask_price, "Failed to parse ask_price");
+            })
+            .ok()?;
 
-        let ask_qty = ticker.ask_qty.parse::<Decimal>().map_err(|e| {
-            warn!(error = %e, raw = %ticker.ask_qty, "Failed to parse ask_qty");
-        }).ok()?;
+        let ask_qty = ticker
+            .ask_qty
+            .parse::<Decimal>()
+            .map_err(|e| {
+                warn!(error = %e, raw = %ticker.ask_qty, "Failed to parse ask_qty");
+            })
+            .ok()?;
 
         let timestamp_ms = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

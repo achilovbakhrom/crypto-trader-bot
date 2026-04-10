@@ -1,6 +1,6 @@
-use trader_core::types::{BorrowerPosition, LiquidationOpportunity, Wei};
-use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
+use rust_decimal::Decimal;
+use trader_core::types::{BorrowerPosition, LiquidationOpportunity, Wei};
 
 /// Evaluates whether a borrower position meets the profit threshold for liquidation.
 pub struct LiquidationDetector {
@@ -47,10 +47,8 @@ impl LiquidationDetector {
         // Estimate the USD value of the position in cents.
         // total_collateral_wei is stored in Aave's base unit (8-decimal USD),
         // so 1e8 = $1.  Multiply by collateral_price_cents / 1e8 to get cents.
-        let collateral_value_cents = self.collateral_value_cents(
-            position.total_collateral_wei,
-            collateral_price_cents,
-        );
+        let collateral_value_cents =
+            self.collateral_value_cents(position.total_collateral_wei, collateral_price_cents);
 
         if collateral_value_cents > self.max_position_usd_cents {
             return None;
@@ -82,16 +80,9 @@ impl LiquidationDetector {
     ///
     /// `debt_amount_wei` is denominated in the debt asset (18 decimals).
     /// The result is in USDT cents.
-    pub fn calculate_profit_cents(
-        &self,
-        debt_amount_wei: Wei,
-        collateral_price_cents: i64,
-    ) -> i64 {
+    pub fn calculate_profit_cents(&self, debt_amount_wei: Wei, collateral_price_cents: i64) -> i64 {
         // Convert debt from wei (u128, 18 decimals) to a Decimal.
-        let debt_decimal = Decimal::new(
-            debt_amount_wei.0.min(i64::MAX as u128) as i64,
-            18,
-        );
+        let debt_decimal = Decimal::new(debt_amount_wei.0.min(i64::MAX as u128) as i64, 18);
 
         let bonus = Decimal::new(self.bonus_bps as i64, 4); // bonus_bps / 10_000
         let price = Decimal::new(collateral_price_cents, 0);
@@ -123,13 +114,14 @@ impl LiquidationDetector {
     ///
     /// The market `_collateral_price_cents` is not used because Aave's base
     /// currency is already denominated in USD.
-    fn collateral_value_cents(&self, total_collateral_wei: Wei, _collateral_price_cents: i64) -> i64 {
+    fn collateral_value_cents(
+        &self,
+        total_collateral_wei: Wei,
+        _collateral_price_cents: i64,
+    ) -> i64 {
         // total_collateral_wei with scale 8 gives USD value.
         // Multiply by 100 to convert USD to cents.
-        let raw = Decimal::new(
-            total_collateral_wei.0.min(i64::MAX as u128) as i64,
-            8,
-        );
+        let raw = Decimal::new(total_collateral_wei.0.min(i64::MAX as u128) as i64, 8);
         let usd_cents = raw * Decimal::new(100, 0);
         usd_cents.to_i64().unwrap_or(i64::MAX)
     }

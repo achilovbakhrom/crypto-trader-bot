@@ -1,8 +1,8 @@
-use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::Span;
 use ratatui::widgets::{Block, BorderType, Borders, Cell, Row, Table};
+use ratatui::Frame;
 
 use trader_core::types::Wei;
 
@@ -39,7 +39,10 @@ pub fn render_positions(f: &mut Frame, area: Rect, state: &AppState) {
 
             Row::new(vec![
                 Cell::from(Span::styled(short_addr, Style::default().fg(Color::White))),
-                Cell::from(Span::styled(hf_decimal, Style::default().fg(color).add_modifier(Modifier::BOLD))),
+                Cell::from(Span::styled(
+                    hf_decimal,
+                    Style::default().fg(color).add_modifier(Modifier::BOLD),
+                )),
                 Cell::from(Span::styled(protocol_str, Style::default().fg(Color::Gray))),
             ])
         })

@@ -7,10 +7,7 @@ use crate::state::{AppState, WsMessage};
 
 /// Axum handler that upgrades an HTTP connection to a WebSocket and begins
 /// streaming [`WsMessage`] events to the client.
-pub async fn ws_handler(
-    ws: WebSocketUpgrade,
-    State(state): State<AppState>,
-) -> impl IntoResponse {
+pub async fn ws_handler(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl IntoResponse {
     let rx = state.ws_tx.subscribe();
     ws.on_upgrade(move |socket| handle_socket(socket, rx))
 }

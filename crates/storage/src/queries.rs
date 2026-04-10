@@ -125,10 +125,7 @@ pub async fn update_liquidation_status(
 }
 
 #[instrument(skip(pool))]
-pub async fn get_liquidations(
-    pool: &PgPool,
-    limit: i64,
-) -> Result<Vec<Liquidation>, StorageError> {
+pub async fn get_liquidations(pool: &PgPool, limit: i64) -> Result<Vec<Liquidation>, StorageError> {
     let rows = sqlx::query_as::<_, Liquidation>(
         r#"
         SELECT id, borrower, protocol, collateral_asset, debt_asset,
@@ -263,8 +260,7 @@ pub async fn log_event(
     payload: impl serde::Serialize + Send + Sync,
 ) -> Result<(), StorageError> {
     let occurred_at: DateTime<Utc> = Utc::now();
-    let payload_val = serde_json::to_value(&payload)
-        .unwrap_or(serde_json::Value::Null);
+    let payload_val = serde_json::to_value(&payload).unwrap_or(serde_json::Value::Null);
 
     sqlx::query(
         r#"

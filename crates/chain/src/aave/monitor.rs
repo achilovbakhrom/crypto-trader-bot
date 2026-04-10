@@ -58,9 +58,9 @@ impl AaveMonitor {
         })?;
 
         // Validate the URL up front so we fail fast rather than at poll time.
-        let _: Url = rpc_url.parse().map_err(|e| {
-            ChainError::ParseError(format!("Invalid RPC URL '{}': {}", rpc_url, e))
-        })?;
+        let _: Url = rpc_url
+            .parse()
+            .map_err(|e| ChainError::ParseError(format!("Invalid RPC URL '{}': {}", rpc_url, e)))?;
 
         Ok(Self {
             rpc_url: rpc_url.to_string(),
@@ -142,11 +142,10 @@ impl AaveMonitor {
             ChainError::ParseError(format!("Invalid borrower address '{}': {}", address, e))
         })?;
 
-        let data = pool
-            .getUserAccountData(user)
-            .call()
-            .await
-            .map_err(|e| ChainError::ContractError(format!("getUserAccountData failed: {}", e)))?;
+        let data =
+            pool.getUserAccountData(user).call().await.map_err(|e| {
+                ChainError::ContractError(format!("getUserAccountData failed: {}", e))
+            })?;
 
         let (collateral_asset, debt_asset) = {
             let guard = self.borrowers.read().await;

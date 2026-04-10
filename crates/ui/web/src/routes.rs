@@ -48,8 +48,7 @@ pub async fn get_trades(
     State(state): State<AppState>,
     Query(params): Query<PaginationParams>,
 ) -> Result<impl IntoResponse, WebError> {
-    let trades =
-        storage::queries::get_recent_trades(state.db.pool(), params.limit).await?;
+    let trades = storage::queries::get_recent_trades(state.db.pool(), params.limit).await?;
     Ok(Json(trades))
 }
 
@@ -62,8 +61,7 @@ pub async fn get_liquidations(
     State(state): State<AppState>,
     Query(params): Query<PaginationParams>,
 ) -> Result<impl IntoResponse, WebError> {
-    let liquidations =
-        storage::queries::get_liquidations(state.db.pool(), params.limit).await?;
+    let liquidations = storage::queries::get_liquidations(state.db.pool(), params.limit).await?;
     Ok(Json(liquidations))
 }
 
@@ -76,7 +74,6 @@ pub async fn get_events(
     State(state): State<AppState>,
     Query(params): Query<PaginationParams>,
 ) -> Result<impl IntoResponse, WebError> {
-    let rows =
-        storage::queries::get_all_recent_events(state.db.pool(), params.limit).await?;
+    let rows = storage::queries::get_all_recent_events(state.db.pool(), params.limit).await?;
     Ok(Json(rows))
 }
