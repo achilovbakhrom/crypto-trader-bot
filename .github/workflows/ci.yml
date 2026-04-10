@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Rust quality checks ──────────────────────────────────────────────────────
+  rust:
+    name: Rust — fmt / clippy / test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo fmt --check
+        run: cargo fmt --check
+
+      - name: cargo clippy
+        run: cargo clippy -- -D warnings
+
+      - name: cargo test
+        run: cargo test
+
+  # ── Frontend quality checks (only when frontend exists) ─────────────────────
+  frontend:
+    name: Frontend — lint / fmt
+    runs-on: ubuntu-latest
+    # Skip if the frontend directory hasn't been created yet
+    if: hashFiles('crates/ui/web/frontend/package.json') != ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: crates/ui/web/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd crates/ui/web/frontend && npm ci
+
+      - name: Prettier check
+        run: cd crates/ui/web/frontend && npx prettier --check .
+
+      - name: ESLint
+        run: cd crates/ui/web/frontend && npx eslint . --max-warnings 0

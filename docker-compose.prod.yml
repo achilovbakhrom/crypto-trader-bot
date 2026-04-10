@@ -1,0 +1,65 @@
+# Production — runs on Hetzner server.
+# All secrets come from .env file on the server (never in repo).
+
+services:
+  bot:
+    image: ghcr.io/achilovbakhrom/crypto-trader-bot:${IMAGE_TAG:-latest}
+    container_name: trader_bot
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - trader_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: trader_postgres
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - trader_net
+
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: trader_openobserve
+    environment:
+      ZO_ROOT_USER_EMAIL:    ${OPENOBSERVE_EMAIL}
+      ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_PASSWORD}
+      ZO_DATA_DIR:           /data
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve_data:/data
+    restart: unless-stopped
+    networks:
+      - trader_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  openobserve_data:
+
+networks:
+  trader_net:
+    driver: bridge
