@@ -1,0 +1,38 @@
+# Local development infrastructure only.
+# Runs PostgreSQL and OpenObserve. The bot itself runs via `make run`.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: trader_postgres
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-crypto_trader}
+      POSTGRES_USER:     ${POSTGRES_USER:-trader}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trader_local}
+    ports:
+      - "5450:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trader}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: trader_openobserve
+    environment:
+      ZO_ROOT_USER_EMAIL:    ${OPENOBSERVE_EMAIL:-admin@trader.local}
+      ZO_ROOT_USER_PASSWORD: ${OPENOBSERVE_PASSWORD:-admin123}
+      ZO_DATA_DIR:           /data
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  openobserve_data:
