@@ -63,7 +63,7 @@ impl LiquidationStrategy {
     pub async fn run(
         &self,
         mut opportunity_rx: mpsc::Receiver<LiquidationOpportunity>,
-        provider: Arc<impl alloy::providers::Provider + Send + Sync + 'static>,
+        provider: Arc<impl alloy::providers::Provider + 'static>,
     ) -> anyhow::Result<()> {
         info!("LiquidationStrategy run loop started");
 

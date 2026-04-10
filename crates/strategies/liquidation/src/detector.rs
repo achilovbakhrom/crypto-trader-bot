@@ -13,9 +13,8 @@ pub struct LiquidationDetector {
 impl LiquidationDetector {
     /// Create a new detector.
     ///
-    /// * `min_profit_cents`      – minimum net profit in USDT cents required to proceed.
-    /// * `max_position_usd_cents`– positions larger than this (in cents) are skipped to
-    ///                             limit capital exposure.
+    /// - `min_profit_cents`: minimum net profit in USDT cents required to proceed.
+    /// - `max_position_usd_cents`: positions larger than this are skipped to limit capital exposure.
     pub fn new(min_profit_cents: i64, max_position_usd_cents: i64) -> Self {
         Self {
             min_profit_cents,

@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
-use serde_json::Value as JsonValue;
 use sqlx::PgPool;
 use tracing::{debug, instrument};
 use uuid::Uuid;

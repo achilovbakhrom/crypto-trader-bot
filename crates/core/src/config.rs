@@ -81,7 +81,7 @@ impl AppConfig {
         // Load .env file if present (non-fatal if missing)
         let _ = dotenvy::dotenv();
 
-        let mut cfg = Config::builder()
+        let cfg = Config::builder()
             .add_source(File::with_name("config/default"))
             .add_source(Environment::default().separator("_").ignore_empty(true))
             .build()?;

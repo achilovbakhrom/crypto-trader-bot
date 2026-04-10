@@ -12,7 +12,6 @@ use storage::models::NewTokenUnlock;
 use storage::queries;
 use trader_core::types::Symbol;
 
-use crate::error::TokenUnlockError;
 use crate::scanner::UnlockScanner;
 use crate::trader::UnlockTrader;
 

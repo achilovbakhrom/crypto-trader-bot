@@ -17,12 +17,11 @@ impl Drop for TelemetryGuard {
 
 /// Initialise tracing with structured JSON logging and (optionally) OTLP export.
 ///
-/// * `service_name`      – reported as the OTel `service.name` resource attribute.
-/// * `openobserve_url`   – base URL of the OpenObserve instance, e.g.
-///                         `http://localhost:5080`. Set to `""` to
-///                         disable OTLP export and log to stdout only.
-/// * `openobserve_token` – Bearer token for the OpenObserve API.
-/// * `log_level`         – `tracing` filter string, e.g. `"info"`.
+/// - `service_name`: reported as the OTel `service.name` resource attribute.
+/// - `openobserve_url`: base URL of the OpenObserve instance (e.g. `http://localhost:5080`).
+///   Set to `""` to disable OTLP export and log to stdout only.
+/// - `openobserve_token`: Bearer token for the OpenObserve API.
+/// - `log_level`: `tracing` filter string, e.g. `"info"`.
 pub fn init_telemetry(
     service_name: &str,
     openobserve_url: &str,
